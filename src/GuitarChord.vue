@@ -14,7 +14,7 @@
         </text>
 
         <!-- Nut label -->
-        <text v-if="chord.nut !== 0" x="8" y="108" fill="black" font-size="8" text-anchor="start">
+        <text x="13" y="98" fill="black" font-size="8" text-anchor="start">
             {{ chord.nut }}
         </text>
 
