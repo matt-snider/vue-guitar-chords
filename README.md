@@ -11,7 +11,9 @@ e.g.
 ```
 
 Produces:
-![G-Chord](http://rawgithub.com/matt-snider/6bbdae922572843aff491579cf3bdd61/raw/0dfc630d63f7c376ec6b4e85a24f794f4e1a2d94/g-chord.svg)
+
+
+<img src="https://rawgit.com/matt-snider/6bbdae922572843aff491579cf3bdd61/raw/a7ac0e411a56d54c41b7a74dc5578a6e3a929de2/g-chord.svg" width="150" height="150"/>
 
 ## Build Setup
 
