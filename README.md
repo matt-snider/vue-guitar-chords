@@ -13,7 +13,7 @@ e.g.
 Produces:
 
 
-<img src="https://rawgit.com/matt-snider/6bbdae922572843aff491579cf3bdd61/raw/a7ac0e411a56d54c41b7a74dc5578a6e3a929de2/g-chord.svg" width="150" height="150"/>
+<img src="https://rawgit.com/matt-snider/6bbdae922572843aff491579cf3bdd61/raw/a7ac0e411a56d54c41b7a74dc5578a6e3a929de2/g-chord.svg" width="250" height="250"/>
 
 ## Build Setup
 
