@@ -18,10 +18,11 @@ export default {
     ],
     computed: {
         x() {
-            return (this.fret - 1) * 20 + 5;
+            return 2.5 + this.string  * 17;
         },
+
         y() {
-            return 100 - (this.string  * 17 + 12);
+            return (this.fret - 1) * 20 + 5;
         },
     },
 };
