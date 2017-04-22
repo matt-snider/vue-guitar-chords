@@ -18,7 +18,14 @@
             {{ chord.nut }}
         </text>
 
-        <fretboard x="10" y="10" width="90" height="80"></fretboard>
+        <!-- Fretboard and strings -->
+        <fretboard x="10" y="10" width="90" height="80">
+            <fretted-note v-for="note in chord.fretted"
+                :string="note.string"
+                :fret="note.fret"
+                :finger="note.finger">
+            </fretted-note>
+        </fretboard>
     </svg>
 </template>
 
@@ -33,10 +40,12 @@ const CHORD = {
 };
 
 import Fretboard from './Fretboard.vue';
+import FrettedNote from './FrettedNote.vue';
 
 export default {
     components: {
         Fretboard,
+        FrettedNote,
     },
     data() {
         return {

@@ -25,5 +25,8 @@
         <line stroke="black" stroke-width="0.5" x1="0" y1="58.5" x2="100" y2="58.5"/>
         <line stroke="black" stroke-width="0.5" x1="0" y1="75.5" x2="100" y2="75.5"/>
         <line stroke="black" stroke-width="0.5" x1="0" y1="92.5" x2="100" y2="92.5"/>
+
+        <!-- Finger placement -->
+        <slot></slot>
     </svg>
 </template>
