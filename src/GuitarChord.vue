@@ -33,9 +33,12 @@
 const CHORD = {
     name: 'G Chord',
     nut: 0,
-    tuning: ['E', 'A', 'D', 'G', 'B', 'e'],
-    fingers: [
-        {finger: 1, string: 0, fret: 0}
+    tuning: ['E', 'A', 'D', 'G', 'B', 'E'],
+    fretted: [
+        { string: 0, fret: 3, finger: 2 },
+        { string: 1, fret: 2, finger: 1 },
+        { string: 4, fret: 3, finger: 3 },
+        { string: 5, fret: 3, finger: 4 },
     ],
 };
 
