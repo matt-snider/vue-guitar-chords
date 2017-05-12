@@ -3,10 +3,10 @@
         tabindex="0"
         @keyup.esc="remove"
         @keyup.delete="remove"
-        @keyup.up="decreaseFret"
-        @keyup.down="increaseFret"
-        @keyup.left="decreaseString"
-        @keyup.right="increaseString"
+        @keyup.up="moveFret(-1)"
+        @keyup.down="moveFret(1)"
+        @keyup.left="moveString(-1)"
+        @keyup.right="moveString(1)"
         @keyup.fingers="setFinger">
         <fretboard x="0" y="0" width="100" height="100"
             @stringClicked="stringClicked">
@@ -25,7 +25,6 @@ import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
 
 let selected;
-let strings = new Map();
 
 export default {
     components: {
@@ -39,50 +38,36 @@ export default {
     },
     methods: {
         stringClicked(event) {
-            if (!strings.has(event.string)) {
-                let newFretted = {
+            let newFretted = this.fretted.find(x => x.string === event.string);
+            if (!newFretted) {
+                newFretted = {
                     string: event.string,
                     fret: event.fret,
                     finger: 1,
                 };
                 this.fretted.push(newFretted);
-                strings.set(event.string, newFretted);
-            } else {
-                strings.get(event.string).fret = event.fret;
             }
-            selected = strings.get(event.string);
+            selected = newFretted;
         },
 
-        increaseFret() {
-            if (!selected || selected.fret >= 5) {
+        moveFret(change) {
+            if (!selected) {
                 return;
             }
-            selected.fret += 1;
+            let newValue = selected.fret + change;
+            if (newValue >= 1 && newValue <= 5) {
+                selected.fret = newValue;
+            }
         },
 
-        decreaseFret() {
-            if (!selected || selected.fret <= 1) {
+        moveString(change) {
+            if (!selected) {
                 return;
             }
-            selected.fret -= 1;
-        },
-
-        increaseString() {
-            if (!selected || selected.string >= 5) {
-                return;
+            let newValue = selected.string + change;
+            if (newValue >= 0 && newValue <= 5) {
+                selected.string = newValue;
             }
-            strings.delete(selected.string);
-            selected.string += 1;
-            strings.set(selected.string, selected);
-        },
-
-        decreaseString() {
-            if (!selected || selected.string <= 0) {
-                return;
-            }
-            strings.delete(selected.string);
-            selected.string -= 1;
-            strings.set(selected.string, selected);
         },
 
         remove() {
@@ -91,7 +76,7 @@ export default {
             }
             let index = this.fretted.findIndex(x => x === selected);
             this.fretted.splice(index, 1);
-            strings.delete(selected.string);
+            selected = null;
         },
 
         setFinger(event) {
