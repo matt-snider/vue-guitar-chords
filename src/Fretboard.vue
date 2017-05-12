@@ -21,7 +21,7 @@
         <!-- Strings -->
         <line v-for="i in [0, 1, 2, 3, 4, 5]"
             @click="stringClicked(i, $event)"
-            stroke="black" stroke-width="0.5"
+            stroke="black" stroke-width="0.5" :id="'string-' + i"
             :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
 
         <!-- Finger placement -->
@@ -54,3 +54,24 @@ export default {
     },
 };
 </script>
+
+<style>
+#string-0:hover,
+#string-1:hover,
+#string-2:hover,
+#string-3:hover,
+#string-4:hover,
+#string-5:hover {
+    stroke: grey;
+    stroke-width: 2;
+}
+
+#string-0:hover ~ #string-0-note circle,
+#string-1:hover ~ #string-1-note circle,
+#string-2:hover ~ #string-2-note circle,
+#string-3:hover ~ #string-3-note circle,
+#string-4:hover ~ #string-4-note circle,
+#string-5:hover ~ #string-5-note circle {
+    fill: grey;
+}
+</style>

@@ -13,7 +13,8 @@
             <fretted-note v-for="note in fretted"
                 :string="note.string"
                 :fret="note.fret"
-                :finger="note.finger">
+                :finger="note.finger"
+                :id="'string-' + note.string + '-note'">
             </fretted-note>
         </fretboard>
     </svg>
