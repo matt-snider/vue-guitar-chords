@@ -6,15 +6,23 @@
                     tuning="EADGBE" :fretted="gChordNotes">
             </guitar-chord>
         </div>
+
+        <h3> Guitar Chord Editor </h3>
+        <div style="width:250px; height:250px;">
+            <guitar-chord-editor>
+            </guitar-chord-editor>
+        </div>
     </div>
 </template>
 
 <script>
 import GuitarChord from './GuitarChord.vue';
+import GuitarChordEditor from './GuitarChordEditor.vue';
 
 export default {
     components: {
         GuitarChord,
+        GuitarChordEditor,
     },
     data() {
         return {
