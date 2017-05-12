@@ -6,7 +6,8 @@
         @keyup.up="decreaseFret"
         @keyup.down="increaseFret"
         @keyup.left="decreaseString"
-        @keyup.right="increaseString">
+        @keyup.right="increaseString"
+        @keyup.fingers="setFinger">
         <fretboard x="0" y="0" width="100" height="100"
             @stringClicked="stringClicked">
             <fretted-note v-for="note in fretted"
@@ -19,6 +20,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
 
@@ -91,6 +93,21 @@ export default {
             this.fretted.splice(index, 1);
             strings.delete(selected.string);
         },
+
+        setFinger(event) {
+            if (!selected) {
+                return;
+            }
+            selected.finger = event.key;
+        },
+    },
+
+    beforeCreate() {
+        // Register 1, 2, 3, 4 as fingerings
+        // Note: need numpad too (96,...)
+        Vue.config.keyCodes = {
+            fingers: [49, 50, 51, 52, 97, 98, 99, 100],
+        };
     },
 };
 </script>
