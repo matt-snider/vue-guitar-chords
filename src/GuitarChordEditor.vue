@@ -1,5 +1,12 @@
 <template>
-    <svg width="100%" viewBox="0 0 100 100">
+    <svg width="100%" viewBox="0 0 100 100"
+        tabindex="0"
+        @keyup.esc="remove"
+        @keyup.delete="remove"
+        @keyup.up="decreaseFret"
+        @keyup.down="increaseFret"
+        @keyup.left="decreaseString"
+        @keyup.right="increaseString">
         <fretboard x="0" y="0" width="100" height="100"
             @stringClicked="stringClicked">
             <fretted-note v-for="note in fretted"
@@ -9,7 +16,6 @@
             </fretted-note>
         </fretboard>
     </svg>
-
 </template>
 
 <script>
@@ -42,6 +48,48 @@ export default {
             } else {
                 strings.get(event.string).fret = event.fret;
             }
+            selected = strings.get(event.string);
+        },
+
+        increaseFret() {
+            if (!selected || selected.fret >= 5) {
+                return;
+            }
+            selected.fret += 1;
+        },
+
+        decreaseFret() {
+            if (!selected || selected.fret <= 1) {
+                return;
+            }
+            selected.fret -= 1;
+        },
+
+        increaseString() {
+            if (!selected || selected.string >= 5) {
+                return;
+            }
+            strings.delete(selected.string);
+            selected.string += 1;
+            strings.set(selected.string, selected);
+        },
+
+        decreaseString() {
+            if (!selected || selected.string <= 0) {
+                return;
+            }
+            strings.delete(selected.string);
+            selected.string -= 1;
+            strings.set(selected.string, selected);
+        },
+
+        remove() {
+            if (!selected) {
+                return;
+            }
+            let index = this.fretted.findIndex(x => x === selected);
+            this.fretted.splice(index, 1);
+            strings.delete(selected.string);
         },
     },
 };
