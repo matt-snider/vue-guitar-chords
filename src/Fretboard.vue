@@ -1,5 +1,5 @@
 <template>
-    <svg viewBox="0 0 100 100">
+    <svg viewBox="0 0 100 100" ref="svg">
         <!-- Fretboard edges -->
         <line x1="0" y1="0" x2="0" y2="100"
                 stroke="black" stroke-width="1"/>
@@ -19,14 +19,38 @@
         <line x1="0" y1="80" x2="100" y2="80" stroke="black" stroke-width="0.5"/>
 
         <!-- Strings -->
-        <line stroke="black" stroke-width="0.5" x1="7.5" y1="0" x2="7.5" y2="100"/>
-        <line stroke="black" stroke-width="0.5" x1="24.5" y1="0" x2="24.5" y2="100"/>
-        <line stroke="black" stroke-width="0.5" x1="41.5" y1="0" x2="41.5" y2="100"/>
-        <line stroke="black" stroke-width="0.5" x1="58.5" y1="0" x2="58.5" y2="100"/>
-        <line stroke="black" stroke-width="0.5" x1="75.5" y1="0" x2="75.5" y2="100"/>
-        <line stroke="black" stroke-width="0.5" x1="92.5" y1="0" x2="92.5" y2="100"/>
+        <line v-for="i in [0, 1, 2, 3, 4, 5]"
+            @click="stringClicked(i, $event)"
+            stroke="black" stroke-width="0.5"
+            :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
 
         <!-- Finger placement -->
         <slot></slot>
     </svg>
 </template>
+
+<script>
+let svgPoint;
+
+export default {
+    methods: {
+        fretFromClick(event) {
+            svgPoint.x = event.clientX;
+            svgPoint.y = event.clientY;
+
+            let inversePt = this.$refs.svg.getScreenCTM().inverse()
+            let svgClick = svgPoint.matrixTransform(inversePt);
+            return Math.floor(1 + svgClick.y / 20);
+        },
+
+        stringClicked(string, event) {
+            let fret = this.fretFromClick(event);
+            this.$emit('stringClicked', { string, fret });
+        },
+    },
+
+    mounted() {
+        svgPoint = this.$refs.svg.createSVGPoint();
+    },
+};
+</script>
