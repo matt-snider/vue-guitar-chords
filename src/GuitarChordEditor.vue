@@ -14,7 +14,8 @@
                 :string="note.string"
                 :fret="note.fret"
                 :finger="note.finger"
-                :id="'string-' + note.string + '-note'">
+                :class="[{active: selected===note}, 'fretted-note-' + note.string]"
+                @click="stringClicked(note)">
             </fretted-note>
         </fretboard>
     </svg>
@@ -25,8 +26,6 @@ import Vue from 'vue';
 import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
 
-let selected;
-
 export default {
     components: {
         Fretboard,
@@ -35,6 +34,7 @@ export default {
     data() {
         return {
             fretted: [],
+            selected: null,
         };
     },
     methods: {
@@ -48,43 +48,43 @@ export default {
                 };
                 this.fretted.push(newFretted);
             }
-            selected = newFretted;
+            this.selected = newFretted;
         },
 
         moveFret(change) {
-            if (!selected) {
+            if (!this.selected) {
                 return;
             }
-            let newValue = selected.fret + change;
+            let newValue = this.selected.fret + change;
             if (newValue >= 1 && newValue <= 5) {
-                selected.fret = newValue;
+                this.selected.fret = newValue;
             }
         },
 
         moveString(change) {
-            if (!selected) {
+            if (!this.selected) {
                 return;
             }
-            let newValue = selected.string + change;
+            let newValue = this.selected.string + change;
             if (newValue >= 0 && newValue <= 5) {
-                selected.string = newValue;
+                this.selected.string = newValue;
             }
         },
 
         remove() {
-            if (!selected) {
+            if (!this.selected) {
                 return;
             }
-            let index = this.fretted.findIndex(x => x === selected);
+            let index = this.fretted.findIndex(x => x === this.selected);
             this.fretted.splice(index, 1);
-            selected = null;
+            this.selected = null;
         },
 
         setFinger(event) {
-            if (!selected) {
+            if (!this.selected) {
                 return;
             }
-            selected.finger = event.key;
+            this.selected.finger = event.key;
         },
     },
 

@@ -21,7 +21,7 @@
         <!-- Strings -->
         <line v-for="i in [0, 1, 2, 3, 4, 5]"
             @click="stringClicked(i, $event)"
-            stroke="black" stroke-width="0.5" :id="'string-' + i"
+            stroke="black" stroke-width="0.5" :class="'string-' + i"
             :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
 
         <!-- Finger placement -->
@@ -56,22 +56,40 @@ export default {
 </script>
 
 <style>
-#string-0:hover,
-#string-1:hover,
-#string-2:hover,
-#string-3:hover,
-#string-4:hover,
-#string-5:hover {
+.string-0:hover,
+.string-1:hover,
+.string-2:hover,
+.string-3:hover,
+.string-4:hover,
+.string-5:hover {
     stroke: grey;
     stroke-width: 2;
 }
-
-#string-0:hover ~ #string-0-note circle,
-#string-1:hover ~ #string-1-note circle,
-#string-2:hover ~ #string-2-note circle,
-#string-3:hover ~ #string-3-note circle,
-#string-4:hover ~ #string-4-note circle,
-#string-5:hover ~ #string-5-note circle {
+.string-0:hover ~ .fretted-note-0 circle,
+.string-1:hover ~ .fretted-note-1 circle,
+.string-2:hover ~ .fretted-note-2 circle,
+.string-3:hover ~ .fretted-note-3 circle,
+.string-4:hover ~ .fretted-note-4 circle,
+.string-5:hover ~ .fretted-note-5 circle
+.string:hover ~ .fretted-note {
     fill: grey;
+}
+
+.fretted-note-0 circle:hover,
+.fretted-note-1 circle:hover,
+.fretted-note-2 circle:hover,
+.fretted-note-3 circle:hover,
+.fretted-note-4 circle:hover,
+.fretted-note-5 circle:hover {
+    fill: grey;
+}
+
+.fretted-note-0.active circle,
+.fretted-note-1.active circle,
+.fretted-note-2.active circle,
+.fretted-note-3.active circle,
+.fretted-note-4.active circle,
+.fretted-note-5.active circle {
+    fill: blue !important;
 }
 </style>
