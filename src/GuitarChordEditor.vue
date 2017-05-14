@@ -8,9 +8,7 @@
         <fretboard x="0" y="0" width="100" height="100">
             <g :class="[{active: selected === fretted[i]}, 'string-group']"
                 v-for="i in [0, 1, 2, 3, 4, 5]">
-                <line @click="stringClicked(i, $event)"
-                    stroke="black" stroke-width="0.5" class="string"
-                    :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
+                <string @click.native="stringClicked(i, $event)" :i="i"></string>
                 <fretted-note v-if="fretted[i]"
                     :string="fretted[i].string"
                     :fret="fretted[i].fret"
@@ -27,6 +25,7 @@
 import Vue from 'vue';
 import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
+import String from './String.vue';
 let svgPoint;
 
 
@@ -34,6 +33,7 @@ export default {
     components: {
         Fretboard,
         FrettedNote,
+        String,
     },
     data() {
         return {
