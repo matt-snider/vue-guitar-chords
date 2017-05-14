@@ -8,7 +8,7 @@
         </text>
 
         <!-- Tuning -->
-        <text v-for="(note, index) in tuning"
+        <text v-for="(note, index) in splitTuning"
             :x="15 + index*14" y="18"
             fill="black" font-size="8">
             {{ note }}
@@ -39,5 +39,19 @@ export default {
         'tuning',
         'nutPosition',
     ],
+    computed: {
+        splitTuning() {
+            const re = /[ABCDEFG][#b]?/g;
+            let tuning = [];
+            let match;
+            do {
+                match = re.exec(this.tuning);
+                if (match) {
+                    tuning.push(match[0]);
+                }
+            } while (match && tuning.length < 6)
+            return tuning;
+        },
+    },
 };
 </script>

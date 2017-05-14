@@ -21,7 +21,7 @@
             </g>
         </base-chord>
         Chord Name: <input type="text" v-model="name"/>
-        Tuning:     <input type="text" v-model="tuning" pattern="/([ABCDEFG][#b]?){6}/"/>
+        Tuning:     <input type="text" v-model="tuning"/>
     </div>
 </template>
 
