@@ -21,6 +21,11 @@
 
         <!-- Fretboard and strings -->
         <fretboard x="5" y="20" width="95" height="80">
+            <!-- Strings -->
+            <line v-for="i in [0, 1, 2, 3, 4, 5]"
+                stroke="black" stroke-width="0.5"
+                :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
+
             <fretted-note v-for="note in fretted"
                 :string="note.string"
                 :fret="note.fret"

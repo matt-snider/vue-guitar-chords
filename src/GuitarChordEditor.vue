@@ -1,6 +1,5 @@
 <template>
-    <svg width="100%" viewBox="0 0 100 100"
-        tabindex="0"
+    <svg width="100%" viewBox="0 0 100 100" tabindex="0" ref="svg"
         @keyup.esc="remove"
         @keyup.delete="remove"
         @keyup.up="moveFret(-1)"
@@ -8,15 +7,20 @@
         @keyup.left="moveString(-1)"
         @keyup.right="moveString(1)"
         @keyup.fingers="setFinger">
-        <fretboard x="0" y="0" width="100" height="100"
-            @stringClicked="stringClicked">
-            <fretted-note v-for="note in fretted"
-                :string="note.string"
-                :fret="note.fret"
-                :finger="note.finger"
-                :class="[{active: selected===note}, 'fretted-note-' + note.string]"
-                @click="stringClicked(note)">
-            </fretted-note>
+        <fretboard x="0" y="0" width="100" height="100">
+            <g :class="[{active: selected === fretted[i]}, 'string-group']"
+                v-for="i in [0, 1, 2, 3, 4, 5]">
+                <line @click="stringClicked(i, $event)"
+                    stroke="black" stroke-width="0.5" class="string"
+                    :x1="7.5 + 17*i" y1="0" :x2="7.5 + 17*i" y2="100"/>
+                <fretted-note v-if="fretted[i]"
+                    :string="fretted[i].string"
+                    :fret="fretted[i].fret"
+                    :finger="fretted[i].finger"
+                    class="fretted-note"
+                    @click="stringClicked(i, $event)">
+                </fretted-note>
+            </g>
         </fretboard>
     </svg>
 </template>
@@ -25,6 +29,8 @@
 import Vue from 'vue';
 import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
+let svgPoint;
+
 
 export default {
     components: {
@@ -33,22 +39,33 @@ export default {
     },
     data() {
         return {
-            fretted: [],
+            fretted: new Array(6),
             selected: null,
         };
     },
     methods: {
-        stringClicked(event) {
-            let newFretted = this.fretted.find(x => x.string === event.string);
+        stringClicked(string, event) {
+            let fret = this.fretFromClick(event);
+            let newFretted = this.fretted[string];
+            console.log('click', string, fret);
             if (!newFretted) {
                 newFretted = {
-                    string: event.string,
-                    fret: event.fret,
+                    string,
+                    fret,
                     finger: 1,
                 };
-                this.fretted.push(newFretted);
+                this.fretted.splice(string, 0, newFretted);
             }
             this.selected = newFretted;
+        },
+
+        fretFromClick(event) {
+            svgPoint.x = event.clientX;
+            svgPoint.y = event.clientY;
+
+            let inversePt = this.$refs.svg.getScreenCTM().inverse()
+            let svgClick = svgPoint.matrixTransform(inversePt);
+            return Math.floor(1 + svgClick.y / 20);
         },
 
         moveFret(change) {
@@ -75,8 +92,7 @@ export default {
             if (!this.selected) {
                 return;
             }
-            let index = this.fretted.findIndex(x => x === this.selected);
-            this.fretted.splice(index, 1);
+            this.fretted.splice(this.selected.string, 1);
             this.selected = null;
         },
 
@@ -95,5 +111,27 @@ export default {
             fingers: [49, 50, 51, 52, 97, 98, 99, 100],
         };
     },
+
+    mounted() {
+        svgPoint = this.$refs.svg.createSVGPoint();
+    },
 };
 </script>
+
+<style>
+.string-group:hover .string,
+.string-group:hover .fretted-note circle {
+    stroke-width: 2;
+    stroke-opacity: 0.5;
+    fill-opacity: 0.7;
+}
+
+.string-group.active .string,
+.string-group.active .fretted-note circle {
+    stroke-width: 2;
+    stroke-opacity: 0.5;
+    fill-opacity: 0.7;
+    fill: blue;
+    stroke: blue;
+}
+</style>
