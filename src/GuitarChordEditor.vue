@@ -4,8 +4,6 @@
         @keyup.delete="remove"
         @keyup.up="moveFret(-1)"
         @keyup.down="moveFret(1)"
-        @keyup.left="moveString(-1)"
-        @keyup.right="moveString(1)"
         @keyup.fingers="setFinger">
         <fretboard x="0" y="0" width="100" height="100">
             <g :class="[{active: selected === fretted[i]}, 'string-group']"
@@ -75,16 +73,6 @@ export default {
             let newValue = this.selected.fret + change;
             if (newValue >= 1 && newValue <= 5) {
                 this.selected.fret = newValue;
-            }
-        },
-
-        moveString(change) {
-            if (!this.selected) {
-                return;
-            }
-            let newValue = this.selected.string + change;
-            if (newValue >= 0 && newValue <= 5) {
-                this.selected.string = newValue;
             }
         },
 
