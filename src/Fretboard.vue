@@ -1,5 +1,5 @@
 <template>
-    <svg viewBox="0 0 100 100" ref="svg">
+    <svg viewBox="0 0 100 100">
         <!-- Fretboard edges -->
         <line x1="0" y1="0" x2="0" y2="100"
                 stroke="black" stroke-width="1"/>

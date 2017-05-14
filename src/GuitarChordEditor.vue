@@ -1,11 +1,13 @@
 <template>
-    <svg width="100%" viewBox="0 0 100 100" tabindex="0" ref="svg"
-        @keyup.esc="remove"
-        @keyup.delete="remove"
-        @keyup.up="moveFret(-1)"
-        @keyup.down="moveFret(1)"
-        @keyup.fingers="setFinger">
-        <fretboard x="0" y="0" width="100" height="100">
+    <div>
+        <base-chord :name="name" :tuning="tuning"
+            :nut-position="nutPosition"
+            ref="svg" tabindex="0"
+            @keyup.native.esc="remove"
+            @keyup.native.delete="remove"
+            @keyup.native.up="moveFret(-1)"
+            @keyup.native.down="moveFret(1)"
+            @keyup.native.fingers="setFinger">
             <g :class="[{active: selected === fretted[i]}, 'string-group']"
                 v-for="i in [0, 1, 2, 3, 4, 5]">
                 <string @click.native="stringClicked(i, $event)" :i="i"></string>
@@ -17,20 +19,28 @@
                     @click.native="stringClicked(i, $event)">
                 </fretted-note>
             </g>
-        </fretboard>
-    </svg>
+        </base-chord>
+        Chord Name: <input type="text" v-model="name"/>
+        Tuning:     <input type="text" v-model="tuning" pattern="/([ABCDEFG][#b]?){6}/"/>
+    </div>
 </template>
 
 <script>
 import Vue from 'vue';
+import BaseChord from './BaseChord.vue';
 import Fretboard from './Fretboard.vue';
 import FrettedNote from './FrettedNote.vue';
 import String from './String.vue';
+
+let svg;
 let svgPoint;
+let START_Y = 20;
+let FRET_HEIGHT = 20 * 0.8;
 
 
 export default {
     components: {
+        BaseChord,
         Fretboard,
         FrettedNote,
         String,
@@ -39,6 +49,9 @@ export default {
         return {
             fretted: new Array(6),
             selected: null,
+            name: 'X chord',
+            tuning: 'EADGBE',
+            nutPosition: 0,
         };
     },
     methods: {
@@ -61,9 +74,9 @@ export default {
             svgPoint.x = event.clientX;
             svgPoint.y = event.clientY;
 
-            let inversePt = this.$refs.svg.getScreenCTM().inverse()
+            let inversePt = svg.getScreenCTM().inverse()
             let svgClick = svgPoint.matrixTransform(inversePt);
-            return Math.floor(1 + svgClick.y / 20);
+            return Math.floor(1 + (svgClick.y - START_Y) / FRET_HEIGHT);
         },
 
         moveFret(change) {
@@ -101,7 +114,8 @@ export default {
     },
 
     mounted() {
-        svgPoint = this.$refs.svg.createSVGPoint();
+        svg = this.$refs.svg.$el;
+        svgPoint = svg.createSVGPoint();
     },
 };
 </script>
