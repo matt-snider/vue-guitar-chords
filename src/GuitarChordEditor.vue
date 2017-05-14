@@ -52,7 +52,7 @@ export default {
                     fret,
                     finger: 1,
                 };
-                this.fretted.splice(string, 0, newFretted);
+                this.fretted[string] = newFretted;
             }
             this.selected = newFretted;
         },
