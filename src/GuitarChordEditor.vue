@@ -14,7 +14,7 @@
                     :fret="fretted[i].fret"
                     :finger="fretted[i].finger"
                     class="fretted-note"
-                    @click="stringClicked(i, $event)">
+                    @click.native="stringClicked(i, $event)">
                 </fretted-note>
             </g>
         </fretboard>
