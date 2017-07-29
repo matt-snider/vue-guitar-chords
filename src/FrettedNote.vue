@@ -1,14 +1,18 @@
 <template>
     <svg :x="x" :y="y">
-        <finger width="10" height="10" :label="finger"></finger>
+        <barred-finger v-if="isBar" :label="finger"
+            :width="16 * string.length" height="10"/>
+        <finger v-else width="10" height="10" :label="finger"/>
     </svg>
 </template>
 
 <script>
+import BarredFinger from './BarredFinger.vue';
 import Finger from './Finger.vue';
 
 export default {
     components: {
+        BarredFinger,
         Finger,
     },
     props: [
@@ -17,11 +21,18 @@ export default {
         'finger',
     ],
     computed: {
-        x() {
-            return 2.5 + this.string  * 17;
+        isBar() {
+            return Array.isArray(this.string);
         },
 
-        y() {
+        x () {
+            let string = this.isBar
+                ? this.string[0]
+                : this.string;
+            return 2.5 + string * 17;
+        },
+
+        y () {
             return (this.fret - 1) * 20 + 5;
         },
     },

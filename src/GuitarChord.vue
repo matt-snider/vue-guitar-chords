@@ -1,8 +1,8 @@
 <template>
     <base-chord :name="name" :tuning="tuning"
         :nut-position="nutPosition">
-        <string v-for="i in [0, 1, 2, 3, 4, 5]" :i="i"></string>
-        <fretted-note v-for="note in fretted"
+        <string v-for="i in [0, 1, 2, 3, 4, 5]" :key="i" :i="i"></string>
+        <fretted-note v-for="note in fretted" :key="note"
             :string="note.string"
             :fret="note.fret"
             :finger="note.finger">
