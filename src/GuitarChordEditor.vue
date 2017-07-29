@@ -9,7 +9,7 @@
             @keyup.native.down="moveFret(1)"
             @keyup.native.fingers="setFinger">
             <g :class="[{active: selected === fretted[i]}, 'string-group']"
-                v-for="i in [0, 1, 2, 3, 4, 5]">
+                v-for="i in [0, 1, 2, 3, 4, 5]" :key="i">
                 <string @click.native="stringClicked(i, $event)" :i="i"></string>
                 <fretted-note v-if="fretted[i]"
                     :string="fretted[i].string"

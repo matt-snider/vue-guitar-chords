@@ -9,7 +9,7 @@
 
         <!-- Tuning -->
         <text v-for="(note, index) in splitTuning"
-            :x="15 + index*14" y="18"
+            :x="15 + index*14" y="18" :key="index"
             fill="black" font-size="8">
             {{ note }}
         </text>
