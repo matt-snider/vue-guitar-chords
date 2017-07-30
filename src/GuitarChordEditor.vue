@@ -8,15 +8,16 @@
             @keyup.native.up="moveFret(-1)"
             @keyup.native.down="moveFret(1)"
             @keyup.native.fingers="setFinger">
-            <g v-for="i in [0, 1, 2, 3, 4, 5]" :key="i"
-                :class="[{active: selected && selected.string === i}, 'string-group']">
-                <string @click.native="stringClicked(i, $event)" :i="i"></string>
+            <g v-for="i in [0, 1, 2, 3, 4, 5]" :key="i" class="string-group">
+                <string @click.native="stringClicked(i, $event)" :i="i"
+                    :class="{selected: selected && selected.string === i}"></string>
                 <fretted-note  v-for="note in frettedNotes[i]"
                     :key="[note.fret, note.string]"
                     :string="note.string"
                     :fret="note.fret"
                     :finger="note.finger"
                     class="fretted-note"
+                    :class="[{selected: selected === note}, 'fretted-note']"
                     @click.native="noteClicked(note)">
                 </fretted-note>
             </g>
@@ -209,12 +210,17 @@ function isNeighbour(noteA, noteB) {
     fill-opacity: 0.7;
 }
 
-.string-group.active .string,
-.string-group.active .fretted-note circle {
+.string-group .string.selected,
+.string-group .fretted-note.selected circle,
+.string-group .fretted-note.selected rect {
     stroke-width: 2;
     stroke-opacity: 0.5;
     fill-opacity: 0.7;
     fill: blue;
     stroke: blue;
+}
+
+.string-group .fretted-note.selected rect {
+    fill-opacity: 1.0;
 }
 </style>
