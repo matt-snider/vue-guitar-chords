@@ -150,6 +150,7 @@ export default {
                         if (other && isNeighbour(note, other)) {
                             other.string = uniqueArray(other.string, note.string);
                             notes.splice(i, 1);
+                            this.selected = other;
                         } else {
                             // Store key and reference to string array
                             map[key] = note;
