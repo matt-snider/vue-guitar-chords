@@ -8,20 +8,22 @@
             @keyup.native.up="moveFret(-1)"
             @keyup.native.down="moveFret(1)"
             @keyup.native.fingers="setFinger">
-            <g :class="[{active: selected === fretted[i]}, 'string-group']"
-                v-for="i in [0, 1, 2, 3, 4, 5]" :key="i">
+            <g v-for="i in [0, 1, 2, 3, 4, 5]" :key="i"
+                :class="[{active: selected && selected.string === i}, 'string-group']">
                 <string @click.native="stringClicked(i, $event)" :i="i"></string>
-                <fretted-note v-if="fretted[i]"
-                    :string="fretted[i].string"
-                    :fret="fretted[i].fret"
-                    :finger="fretted[i].finger"
+                <fretted-note  v-for="note in findByString(i)"
+                    :key="[note.fret, note.string]"
+                    :string="note.string"
+                    :fret="note.fret"
+                    :finger="note.finger"
                     class="fretted-note"
-                    @click.native="stringClicked(i, $event)">
+                    @click.native="noteClicked(note)">
                 </fretted-note>
             </g>
         </base-chord>
         Chord Name: <input type="text" v-model="name"/>
         Tuning:     <input type="text" v-model="tuning"/>
+        Output: {{jsonOutput }}
     </div>
 </template>
 
@@ -47,7 +49,7 @@ export default {
     },
     data() {
         return {
-            fretted: new Array(6),
+            frettedNotes: [],
             selected: null,
             name: 'X chord',
             tuning: 'EADGBE',
@@ -55,19 +57,35 @@ export default {
         };
     },
     methods: {
-        stringClicked(string, event) {
-            let fret = this.fretFromClick(event);
-            let newFretted = this.fretted[string];
-            console.log('click', string, fret);
-            if (!newFretted) {
-                newFretted = {
-                    string,
-                    fret,
+        noteClicked(note) {
+            console.log('noteClicked', note);
+            this.selected = note;
+        },
+
+        // When an empty string is clicked, create a note at that position.
+        // If the string isn't empty, but sits below a barred note, also create
+        // a note at that position.
+        // Otherwise, there is a (non-barred) note above or below, and we should
+        // simply move it to this new position.
+        stringClicked(clickedString, event) {
+            let clickedFret = this.fretFromClick(event);
+            let closestNote = this.findClosestNote(clickedString, clickedFret);
+            console.log('stringClicked', clickedString);
+            console.log('clickedFret', clickedFret);
+            console.log('closestNote' + ((closestNote && Array.isArray(closestNote.string)) ? ' (barred)' : ''), closestNote);
+
+            if (!closestNote || (closestNote && Array.isArray(closestNote.string) && closestNote.fret < clickedFret)) {
+                let newNote = {
+                    string: clickedString,
+                    fret: clickedFret,
                     finger: 1,
                 };
-                this.fretted[string] = newFretted;
+                this.frettedNotes.splice(clickedString, 0, newNote);
+                this.selected = newNote;
+            } else {
+                this.$set(closestNote, 'fret', clickedFret);
+                this.selected = closestNote;
             }
-            this.selected = newFretted;
         },
 
         fretFromClick(event) {
@@ -79,13 +97,37 @@ export default {
             return Math.floor(1 + (svgClick.y - START_Y) / FRET_HEIGHT);
         },
 
+        // Find the closest fretted note to the position given.
+        // TODO: rename this -- it doesn't find the closest but rather, the
+        // next non-barred note, if it above a barred note, otherwise the barred
+        // note itself
+        findClosestNote(string, fret) {
+            let found;
+            let notesOnString = this.findByString(string);
+            let simpleNote = notesOnString.find(x => !Array.isArray(x.string));
+            if (simpleNote) {
+                found = simpleNote;
+            } else {
+                found = notesOnString[0];
+            }
+            return found;
+        },
+
+        findByString(string) {
+            return this.frettedNotes.filter(x =>
+                Array.isArray(x.string)
+                    ? x.string.includes(string)
+                    : x.string === string
+            );
+        },
+
         moveFret(change) {
             if (!this.selected) {
                 return;
             }
             let newValue = this.selected.fret + change;
             if (newValue >= 1 && newValue <= 5) {
-                this.selected.fret = newValue;
+                this.$set(this.selected, 'fret', newValue);
             }
         },
 
@@ -101,7 +143,33 @@ export default {
             if (!this.selected) {
                 return;
             }
-            this.selected.finger = event.key;
+            this.$set(this.selected, 'finger', event.key);
+        },
+    },
+
+    computed: {
+        jsonOutput() {
+            return this.frettedNotes;
+        },
+    },
+
+    watch: {
+        frettedNotes: {
+            handler() {
+                let barmap = {};
+                for (let [i, f] of this.frettedNotes.entries()) {
+                    if (!f) continue;
+                    let key = [f.fret, f.finger];
+                    if (key in barmap) {
+                        let other = barmap[key];
+                        other.string = Array.from(new Set([].concat(other.string, f.string))).sort();
+                        this.frettedNotes.splice(i, 1);
+                    } else {
+                        barmap[key] = f;
+                    }
+                }
+            },
+            deep: true,
         },
     },
 
