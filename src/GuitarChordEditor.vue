@@ -11,7 +11,7 @@
             <g v-for="i in [0, 1, 2, 3, 4, 5]" :key="i"
                 :class="[{active: selected && selected.string === i}, 'string-group']">
                 <string @click.native="stringClicked(i, $event)" :i="i"></string>
-                <fretted-note  v-for="note in findByString(i)"
+                <fretted-note  v-for="note in frettedNotes[i]"
                     :key="[note.fret, note.string]"
                     :string="note.string"
                     :fret="note.fret"
@@ -49,7 +49,7 @@ export default {
     },
     data() {
         return {
-            frettedNotes: [],
+            frettedNotes: Array.of([], [], [], [], [], []),
             selected: null,
             name: 'X chord',
             tuning: 'EADGBE',
@@ -58,7 +58,6 @@ export default {
     },
     methods: {
         noteClicked(note) {
-            console.log('noteClicked', note);
             this.selected = note;
         },
 
@@ -69,22 +68,20 @@ export default {
         // simply move it to this new position.
         stringClicked(clickedString, event) {
             let clickedFret = this.fretFromClick(event);
-            let closestNote = this.findClosestNote(clickedString, clickedFret);
-            console.log('stringClicked', clickedString);
-            console.log('clickedFret', clickedFret);
-            console.log('closestNote' + ((closestNote && Array.isArray(closestNote.string)) ? ' (barred)' : ''), closestNote);
-
-            if (!closestNote || (closestNote && Array.isArray(closestNote.string) && closestNote.fret < clickedFret)) {
+            let notes = this.frettedNotes[clickedString];
+            let simpleNote = this.findSimpleNote(notes);
+            let barredNote = this.findBarredNote(notes);
+            if(!notes.length || (barredNote && barredNote.fret < clickedFret)) {
                 let newNote = {
                     string: clickedString,
                     fret: clickedFret,
                     finger: 1,
                 };
-                this.frettedNotes.splice(clickedString, 0, newNote);
+                notes.splice(clickedFret, 0, newNote);
                 this.selected = newNote;
             } else {
-                this.$set(closestNote, 'fret', clickedFret);
-                this.selected = closestNote;
+                this.$set(simpleNote, 'fret', clickedFret);
+                this.selected = simpleNote;
             }
         },
 
@@ -97,28 +94,12 @@ export default {
             return Math.floor(1 + (svgClick.y - START_Y) / FRET_HEIGHT);
         },
 
-        // Find the closest fretted note to the position given.
-        // TODO: rename this -- it doesn't find the closest but rather, the
-        // next non-barred note, if it above a barred note, otherwise the barred
-        // note itself
-        findClosestNote(string, fret) {
-            let found;
-            let notesOnString = this.findByString(string);
-            let simpleNote = notesOnString.find(x => !Array.isArray(x.string));
-            if (simpleNote) {
-                found = simpleNote;
-            } else {
-                found = notesOnString[0];
-            }
-            return found;
+        findSimpleNote(notes) {
+            return notes.find(x => !Array.isArray(x.string));
         },
 
-        findByString(string) {
-            return this.frettedNotes.filter(x =>
-                Array.isArray(x.string)
-                    ? x.string.includes(string)
-                    : x.string === string
-            );
+        findBarredNote(notes) {
+            return notes.find(x => Array.isArray(x.string));
         },
 
         moveFret(change) {
@@ -135,7 +116,12 @@ export default {
             if (!this.selected) {
                 return;
             }
-            this.fretted.splice(this.selected.string, 1);
+            let string = Array.isArray(this.selected.string)
+                ? this.selected.string[0]
+                : this.selected.string;
+            let notes = this.frettedNotes[string];
+            let updatedNotes = notes.filter(x => x !== this.selected);
+            this.$set(this.frettedNotes, string, updatedNotes);
             this.selected = null;
         },
 
@@ -149,23 +135,25 @@ export default {
 
     computed: {
         jsonOutput() {
-            return this.frettedNotes;
+            return [].concat(...this.frettedNotes);
         },
     },
 
     watch: {
         frettedNotes: {
             handler() {
-                let barmap = {};
-                for (let [i, f] of this.frettedNotes.entries()) {
-                    if (!f) continue;
-                    let key = [f.fret, f.finger];
-                    if (key in barmap) {
-                        let other = barmap[key];
-                        other.string = Array.from(new Set([].concat(other.string, f.string))).sort();
-                        this.frettedNotes.splice(i, 1);
-                    } else {
-                        barmap[key] = f;
+                let map = {};
+                for (let notes of this.frettedNotes) {
+                    for (let [i, note] of notes.entries()) {
+                        let key = [note.fret, note.finger];
+                        let other = map[key];
+                        if (other && isNeighbour(note, other)) {
+                            other.string = uniqueArray(other.string, note.string);
+                            notes.splice(i, 1);
+                        } else {
+                            // Store key and reference to string array
+                            map[key] = note;
+                        }
                     }
                 }
             },
@@ -186,6 +174,30 @@ export default {
         svgPoint = svg.createSVGPoint();
     },
 };
+
+function uniqueArray(...items) {
+    return Array.from(
+        new Set([]
+            .concat(...items)
+            .sort()
+        )
+    );
+}
+
+function isNeighbour(noteA, noteB) {
+    let A = [].concat(noteA.string);
+    let B = [].concat(noteB.string);
+    let result = false;
+    for (let a of A) {
+        for (let b of B) {
+            if (Math.abs(a - b) === 1) {
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
+}
 </script>
 
 <style>
