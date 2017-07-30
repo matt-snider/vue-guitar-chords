@@ -1,7 +1,7 @@
 <template>
-    <svg :x="x" :y="y">
+    <svg :x="x" :y="y" :width="isBar ? barWidth + 20 : 10">
         <barred-finger v-if="isBar" :label="finger"
-            :width="width" height="10"/>
+            :width="barWidth" height="10"/>
         <finger v-else width="10" height="10" :label="finger"/>
     </svg>
 </template>
@@ -25,15 +25,15 @@ export default {
             return Array.isArray(this.string);
         },
 
-        width() {
-            return (13 + this.string.length/2) * this.string.length;
+        barWidth() {
+            return (15.5 + this.string.length/2) * this.string.length;
         },
 
         x () {
             let string = this.isBar
                 ? this.string[0]
                 : this.string;
-            return 2.5 + string * 17;
+            return -5 + string * 20;
         },
 
         y () {

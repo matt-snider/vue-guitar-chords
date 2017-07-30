@@ -1,16 +1,11 @@
 <template>
     <svg viewBox="0 0 100 100">
-        <!-- Fretboard edges -->
-        <line x1="0" y1="0" x2="0" y2="100"
-                stroke="black" stroke-width="1"/>
-        <line x1="100" y1="0" x2="100" y2="100"
-                stroke="black" stroke-width="1"/>
+        <!-- Nut and bottom border -->
+        <line x1="0" y1="0" x2="100" y2="0"
+                stroke="black" stroke-width="3"/>
         <line x1="0" y1="100" x2="100" y2="100"
                 stroke="black" stroke-width="0.5"/>
 
-        <!-- Nut -->
-        <line x1="0" y1="0" x2="100" y2="0"
-                stroke="black" stroke-width="3"/>
 
         <!-- Frets -->
         <line x1="0" y1="20" x2="100" y2="20" stroke="black" stroke-width="0.5"/>
