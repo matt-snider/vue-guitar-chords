@@ -40,7 +40,7 @@ export default {
                 { string: 5, fret: 3, finger: 4 },
             ],
             aChordNotes: [
-                { string: [3, 4, 5], fret: 2, finger: 1 },
+                { string: [2, 3, 4], fret: 2, finger: 1 },
             ],
         };
     },
